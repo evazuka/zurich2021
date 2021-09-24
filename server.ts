@@ -1,7 +1,7 @@
-const express = require("express")
-const next = require("next")
+import express from "express"
+import next from "next"
 
-const port = parseInt(process.env.PORT, 10) || 3000
+const port = parseInt(process.env.PORT ?? "3000", 10)
 const dev = process.env.NODE_ENV !== "production"
 const app = next({ dev })
 const handle = app.getRequestHandler()
@@ -17,8 +17,7 @@ app.prepare().then(() => {
     return handle(req, res)
   })
 
-  server.listen(port, (err) => {
-    if (err) throw err
+  server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`)
   })
 })
