@@ -1,9 +1,9 @@
 # First Screen
 
 Select from:
-- Focus
-- Flexibility
-
+- Focused
+- Flexible
+- Expressive
 # Second Screen
 
 Day of Week / Create Event
