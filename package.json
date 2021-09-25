@@ -8,7 +8,7 @@
     "start": "npm link typescript && npm link tsconfig-paths && ts-node -r tsconfig-paths/register ./server.ts",
     "lint": "next lint",
     "server": "nodemon -e ts,js --exec ts-node -r tsconfig-paths/register ./server.ts",
-    "lt": "lt --port 3000"
+    "lt": "lt --port 3000 --subdomain hackzurich2021bot"
   },
   "dependencies": {
     "dotenv": "^10.0.0",
