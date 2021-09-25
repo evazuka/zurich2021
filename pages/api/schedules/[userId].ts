@@ -120,12 +120,13 @@ export default async function handler(
     const dataSnapshot = await fb()
       .firestore()
       .collection("schedules")
-      .where("userEmail", "==", userId || "cheevers@zg.gz")
+      .where("userId", "==", userId || "cheevers@zg.gz")
       .get();
     const data: Schedule[] = [];
     dataSnapshot.forEach((doc: any) => {
       data.push(doc.data() as Schedule);
     });
+
     res.status(200).json(data);
   } else if (req.method === "POST") {
     const result = await createScheduleIfPossible(userId as string, body);
