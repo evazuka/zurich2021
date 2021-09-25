@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "ts-node -r tsconfig-paths/register ./server.ts",
+    "start": "npm link typescript && ts-node -r tsconfig-paths/register ./server.ts",
     "lint": "next lint",
     "server": "nodemon -e ts,js --exec ts-node -r tsconfig-paths/register ./server.ts"
   },
@@ -28,6 +28,6 @@
     "eslint-config-next": "11.1.2",
     "nodemon": "^2.0.13",
     "tsconfig-paths": "^3.11.0",
-    "typescript": "4.4.3"
+    "typescript": "^4.4.3"
   }
 }
