@@ -1,5 +1,6 @@
 import { upsertUser } from "bot/storage"
 import { CustomContext } from "bot/types"
+import { environment } from "environment"
 import { SocialCircle } from "pages/api/schedules/[userId]"
 import { User } from "pages/api/users/[id]"
 import { Markup, Telegraf } from "telegraf"
@@ -49,7 +50,7 @@ export const handleStart = (bot: Telegraf<CustomContext>) => {
         [
           Markup.button.url(
             "Dashboard",
-            `${process.env.LT_PATH}/?userId=${ctx.from.id}`
+            `${environment.appPath}/?userId=${ctx.from.id}`
           ),
         ],
       ])
