@@ -1,5 +1,7 @@
 import { User } from "pages/api/users/[id]"
 import firebase from "utils/firebase"
+import admin from "firebase-admin"
+import { SocialCircle } from "pages/api/schedules"
 
 const userCollection = firebase().firestore().collection("users")
 
@@ -14,10 +16,14 @@ export const getUsers = async () => {
   return users
 }
 
-export const upsertUsers = async (users: Partial<User>[]) => {
-  for (const user of users) {
-    const newUser = await userCollection
-      .doc(user.id!)
-      .set(user, { merge: true })
-  }
+export const upsertUser = async (
+  user: Partial<User>,
+  socialCircle: SocialCircle
+) => {
+  const userRef = userCollection.doc(user.id!)
+  const newUser = await userRef.set(user, { merge: true })
+
+  await userRef.update({
+    socialCircles: admin.firestore.FieldValue.arrayUnion(socialCircle),
+  })
 }
