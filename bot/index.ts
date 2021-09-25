@@ -5,16 +5,15 @@ import { getUsers, upsertUsers } from "./storage"
 export const createBot = (token: string) => {
   const bot = new Telegraf(token)
 
-  bot.start((ctx) => ctx.reply("Welcome"))
+  bot.start(async(ctx) => {
+    ctx.reply("Welcome")
+    const chatId = ctx.message.chat.id
+    const chat = await bot.telegram.getChat(chatId)
+    console.log(chat)  
+  })
   bot.help((ctx) => ctx.reply("Send me a sticker"))
   bot.on("sticker", (ctx) => ctx.reply("👍"))
   bot.hears("hi", (ctx) => ctx.reply("Hey there"))
-
-  bot.command("users", async (ctx) => {
-    const users = await getUsers()
-
-    ctx.reply(users.map((x) => x.name).join(", "))
-  })
 
   bot.command("users", async (ctx) => {
     const users = await getUsers()
