@@ -1,0 +1,76 @@
+.background {
+	animation-name: heartbeat;
+  animation-duration: 6s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-delay: 0;
+}
+
+.clouds {
+	animation-name: floating-horizontal;
+  animation-duration: 5s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-delay: 0;
+}
+
+.character {
+	animation-name: floating;
+  animation-duration: 1.5s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-delay: 0;
+}
+
+@keyframes heartbeat {
+	0% {
+		transform: scale(1);
+	}
+	10% {
+		transform: scale(1.1);
+	}
+	30% {
+		transform: scale(1);
+	}
+	40% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.1);
+	}
+	60% {
+		transform: scale(1);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+@keyframes floating-horizontal {
+	0% {
+		opacity: 1;
+		transform: translateX(0px);
+	}
+	50% {
+		transform: translateX(-10px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0px);
+	}
+}
+
+@keyframes floating {
+	0% {
+		opacity: 1;
+		transform: translateY(0px);
+	}
+	50% {
+		transform: translateY(-10px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0px);
+	}
+}
+
