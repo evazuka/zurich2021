@@ -106,6 +106,20 @@ export const createScheduleIfPossible = async (
         startTime: potentialStartWindow,
         endTime: addMinutesTotime(potentialStartWindow, body.duration),
       });
+  } else if (body.socialCircle) {
+    const currentUserResilienceRating = involvedUsers.find(
+      ({ id }) => id === userId
+    )?.resilienceRating;
+    const potentialUserForReschedule = involvedUsers
+      .filter(
+        ({ id, resilienceRating }) =>
+          id !== userId && resilienceRating > currentUserResilienceRating!
+      )
+      .filter(
+        (_, index) => getTotalFreeTime(schedulesPerUser[index]) > body.duration
+      );
+
+    console.log(potentialUserForReschedule[0]);
   }
   return {
     duration: body.duration,

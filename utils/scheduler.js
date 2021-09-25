@@ -176,7 +176,7 @@ function getTotalFreeTime(schedule) {
     (total, slot) => (total += rangeToMinutes(slot)),
     0
   );
-  console.log(totalFreeTime);
+  return totalFreeTime;
 }
 
 function addMinutesTotime(time, min) {
