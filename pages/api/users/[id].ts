@@ -15,13 +15,9 @@ export default async function handler(
 ) {
   const dataSnapshot = await fb()
     .firestore()
-    .collection("schedules")
-    .where("userEmail", "==", req.body.userEmail || 'cheevers@zg.gz')
+    .collection("users")
+    .doc(req.query.id as string)
     .get();
-  const data: Schedule[] = [];
-  dataSnapshot.forEach((doc: any) => {
-    console.log(doc.id, "=>", doc.data());
-    data.push(doc.data() as Schedule);
-  });
-  res.status(200).json(data);
+
+  res.status(200).json(dataSnapshot.data() as User);
 }
