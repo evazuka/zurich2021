@@ -176,15 +176,45 @@ function getTotalFreeTime(schedule) {
     (total, slot) => (total += rangeToMinutes(slot)),
     0
   );
-  console.log(totalFreeTime)
+  console.log(totalFreeTime);
 }
 
+function addMinutesTotime(time, min) {
+  var t = time.split(":"), // convert to array [hh, mm, ss]
+    h = Number(t[0]), // get hours
+    m = Number(t[1]); // get minutes
+  m += min % 60; // increment minutes
+  h += Math.floor(min / 60); // increment hours
+  if (m >= 60) {
+    h++;
+    m -= 60;
+  } // if resulting minues > 60 then increment hours and balance as minutes
+
+  return (
+    (h + "").padStart(2, "0") +
+    ":" + //create string padded with zeros for HH and MM
+    (m + "").padStart(2, "0")
+  ); // original seconds unchanged
+}
+
+
+// console.log(
+//   getTotalFreeTime([
+//     ["09:15", "12:00"],
+//     ["14:00", "16:30"],
+//     ["17:00", "17:30"],
+//   ])
+// );
+
 console.log(
-  getTotalFreeTime([
-    ["09:15", "12:00"],
-    ["14:00", "16:30"],
-    ["17:00", "17:30"],
-  ])
+  getStartTime([
+    [["13:00", "15:00"]],
+    [
+      ["9:00", "11:00"],
+      ["13:00", "15:00"],
+      ["15:20", "17:00"],
+    ],
+  ], 30)
 );
 
-export { getStartTime, getTotalFreeTime };
+export { getStartTime, getTotalFreeTime, addMinutesTotime };

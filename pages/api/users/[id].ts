@@ -1,14 +1,14 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next"
-import fb from "../../../utils/firebase"
+import type { NextApiRequest, NextApiResponse } from "next";
+import fb from "../../../utils/firebase";
 
 export type User = {
-  mindState: string
-  name: string
-  resilienceRating: number
-  socialCircles: string[]
-  id?: string
-}
+  mindState: string;
+  name: string;
+  resilienceRating: number;
+  socialCircles: { id: string; name: string }[];
+  id?: string;
+};
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,7 +18,7 @@ export default async function handler(
     .firestore()
     .collection("users")
     .doc(req.query.id as string)
-    .get()
+    .get();
 
-  res.status(200).json(dataSnapshot.data() as User)
+  res.status(200).json(dataSnapshot.data() as User);
 }
