@@ -29,7 +29,7 @@ export type ScheduleReq = {
   socialCircle: string;
 };
 
-const createScheduleIfPossible = async (body: ScheduleReq) => {
+export const createScheduleIfPossible = async (body: ScheduleReq) => {
   const usersSnapshot = body.socialCircle
     ? await fb().firestore().collection("users").get()
     : await fb()
