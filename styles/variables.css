@@ -1,0 +1,13 @@
+:root {
+  --color-primary: #33a7d8;
+  --color-primary-offset: #62d3ee;
+  --text-primary: rgba(0, 0, 0, 0.88);
+  --text-primary-inverted: rgba(255, 255, 255, 0.88);
+  --text-secondary: rgba(0, 0, 0, 0.56);
+  --bg: rgb(255, 255, 255);
+  --bg-secondary: rgb(242, 243, 250);
+  --bg-secondary-blur: rgba(242, 243, 250, 0.88);
+  --bg-dot: rgba(0, 0, 0, 0.32);
+  --outline: rgba(51, 216, 144, 0.88);
+  --shadow: rgba(0, 0, 0, 0.08);
+}
