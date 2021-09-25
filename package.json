@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "ts-node -r tsconfig-paths/register ./server.ts",
     "lint": "next lint",
     "server": "nodemon -e ts,js --exec ts-node -r tsconfig-paths/register ./server.ts"
   },
