@@ -1,25 +1,33 @@
-import { SocialCircle } from "pages/api/schedules/[userId]"
+import { ok } from "assert"
+import {
+  createScheduleIfPossible,
+  SocialCircle,
+} from "pages/api/schedules/[userId]"
 import { User } from "pages/api/users/[id]"
 import { Telegraf, Markup, session, Context } from "telegraf"
 import { telegrafThrottler } from "telegraf-throttler"
+import { User as TelegrafUser } from "typegram"
+import { isNullOrUndefined } from "utils/helpers"
 import { getUsers, upsertUser } from "./storage"
 
 const throttler = telegrafThrottler()
 
 type SessionData = {
   scheduling: boolean
+  scheduleName: string
 }
 
 interface CustomContext extends Context {
   session?: SessionData
 }
 
+const getUserName = (user: TelegrafUser) =>
+  [user.first_name, user.last_name].filter(Boolean).join(" ")
+
 export const createBot = (token: string) => {
   const bot = new Telegraf<CustomContext>(token)
   bot.use(throttler)
   bot.use(session())
-
-  const handleScheduleTime = (text: string) => {}
 
   bot.start(async (ctx) => {
     ctx.reply(
@@ -29,18 +37,53 @@ export const createBot = (token: string) => {
   })
 
   bot.command("schedule", async (ctx) => {
-    ctx.session ??= { scheduling: false }
-    ctx.session.scheduling = !ctx.session.scheduling
-    ctx.reply(`${ctx.session.scheduling}`)
+    const text = ctx.message.text.replace("/schedule ", "")
+    const name = text.length !== 0 ? text : "Unnamed event"
+    ctx.session ??= { scheduling: true, scheduleName: name }
+    ctx.reply(`How much time do you need for ${name}?`)
   })
 
-  bot.on("message", (ctx) => {})
+  bot.on("text", async (ctx) => {
+    if (!ctx.session?.scheduling) return
+
+    const match = ctx.message.text.match(/\d+/)
+
+    if (isNullOrUndefined(match)) {
+      // TODO:
+      return
+    }
+
+    const chatId = ctx.message.chat.id
+    const chat = await bot.telegram.getChat(chatId)
+    if (chat.type === "private") {
+      // TODO:
+      return
+    }
+
+    const duration = parseInt(match[0])
+
+    const result = await createScheduleIfPossible(ctx.from.id.toString(), {
+      isPersonal: false,
+      isGranular: false,
+      duration: duration,
+      name: getUserName(ctx.from),
+      socialCircle: chat.title,
+    })
+
+    if (isNullOrUndefined(result.startTime)) {
+      ctx.reply(`Sorry, not time available`)
+    } else {
+      ctx.reply(
+        `Cool, ${ctx.session.scheduleName} booked for ${result.startTime}-${result.endTime}`
+      )
+    }
+  })
 
   bot.action("join", async (ctx) => {
-    if (ctx.from === null || ctx.from === undefined) return
+    if (isNullOrUndefined(ctx.from)) return
 
     const chatId = ctx.callbackQuery.message?.chat.id
-    if (chatId === null || chatId === undefined) return
+    if (isNullOrUndefined(chatId)) return
 
     const chat = await bot.telegram.getChat(chatId)
 
@@ -91,7 +134,7 @@ export const createBot = (token: string) => {
 
     const user: Partial<User> = {
       id: ctx.from.id.toString(),
-      name: [ctx.from.first_name, ctx.from.last_name].filter(Boolean).join(" "),
+      name: getUserName(ctx.from),
     }
 
     const socialCircle: SocialCircle = {
