@@ -1,7 +1,7 @@
 import { User } from "pages/api/users/[id]"
 import firebase from "utils/firebase"
 import admin from "firebase-admin"
-import { SocialCircle } from "pages/api/schedules"
+import { SocialCircle } from "pages/api/schedules/[userId]"
 
 const userCollection = firebase().firestore().collection("users")
 

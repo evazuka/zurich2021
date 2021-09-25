@@ -1,53 +1,57 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next";
-import fb from "../../../utils/firebase";
-import { User } from "../users/[id]";
+import type { NextApiRequest, NextApiResponse } from "next"
+import fb from "../../../utils/firebase"
+import { User } from "../users/[id]"
 import {
   getStartTime,
   getTotalFreeTime,
   addMinutesTotime,
-} from "../../../utils/scheduler";
+} from "../../../utils/scheduler"
+
+export type SocialCircle = {
+  id: string
+  name: string
+}
 
 export type Schedule = {
-  userId: string;
-  isPersonal: boolean;
-  isGranular: boolean;
-  startTime: string;
-  endTime: string;
-  name: string;
-  socialCircle?: string;
-  isPending?: boolean;
-  id?: string;
-};
+  userId: string
+  isPersonal: boolean
+  isGranular: boolean
+  startTime: string
+  endTime: string
+  name: string
+  socialCircle?: string
+  isPending?: boolean
+  id?: string
+}
 
 export type ScheduleReq = {
-  isPersonal: boolean;
-  isGranular: boolean;
-  duration: number;
-  name: string;
-  socialCircle: string;
-};
+  isPersonal: boolean
+  isGranular: boolean
+  duration: number
+  name: string
+  socialCircle: string
+}
 
-export const createScheduleIfPossible = async (userId: string, body: ScheduleReq) => {
+export const createScheduleIfPossible = async (
+  userId: string,
+  body: ScheduleReq
+) => {
   const usersSnapshot = body.socialCircle
     ? await fb().firestore().collection("users").get()
-    : await fb()
-        .firestore()
-        .collection("users")
-        .where("id", "==", userId)
-        .get();
-  const involvedUsers: User[] = [];
+    : await fb().firestore().collection("users").where("id", "==", userId).get()
+  const involvedUsers: User[] = []
   usersSnapshot.forEach((doc: any) => {
-    const user = doc.data() as User;
+    const user = doc.data() as User
     body.socialCircle
       ? user.socialCircles?.find(({ name }) => name === body.socialCircle) &&
         involvedUsers.push({ ...user, id: doc.id } as User)
-      : involvedUsers.push({ ...user, id: doc.id } as User);
-  });
-  console.log(involvedUsers);
+      : involvedUsers.push({ ...user, id: doc.id } as User)
+  })
+  console.log(involvedUsers)
   const schedulesPerUser = await Promise.all(
     involvedUsers.map(async ({ socialCircles, id }) => {
-      const schedules: Schedule[] = [];
+      const schedules: Schedule[] = []
 
       const socialCirclesSchedules = await fb()
         .firestore()
@@ -57,19 +61,19 @@ export const createScheduleIfPossible = async (userId: string, body: ScheduleReq
           "in",
           socialCircles.map(({ name }) => name)
         )
-        .get();
+        .get()
       const personalSchedules = await fb()
         .firestore()
         .collection("schedules")
         .where("userId", "==", id)
         .where("isPersonal", "==", true)
-        .get();
+        .get()
       socialCirclesSchedules.forEach((doc: any) => {
-        schedules.push({ ...doc.data(), id: doc.id } as Schedule);
-      });
+        schedules.push({ ...doc.data(), id: doc.id } as Schedule)
+      })
       personalSchedules.forEach((doc: any) => {
-        schedules.push({ ...doc.data(), id: doc.id } as Schedule);
-      });
+        schedules.push({ ...doc.data(), id: doc.id } as Schedule)
+      })
       return schedules
         .map(({ startTime, endTime }) => [startTime, endTime])
         .sort(([startTime1], [startTime2]) =>
@@ -77,13 +81,13 @@ export const createScheduleIfPossible = async (userId: string, body: ScheduleReq
           Number(startTime2.split(":").join(""))
             ? 1
             : -1
-        );
+        )
     })
-  );
+  )
   const potentialStartWindow =
     involvedUsers.length > 0
       ? getStartTime(schedulesPerUser, body.duration)
-      : null;
+      : null
   if (potentialStartWindow) {
     await fb()
       .firestore()
@@ -97,7 +101,7 @@ export const createScheduleIfPossible = async (userId: string, body: ScheduleReq
         isPending: false,
         startTime: potentialStartWindow,
         endTime: addMinutesTotime(potentialStartWindow, body.duration),
-      });
+      })
   }
   return {
     duration: body.duration,
@@ -106,14 +110,14 @@ export const createScheduleIfPossible = async (userId: string, body: ScheduleReq
       potentialStartWindow &&
       addMinutesTotime(potentialStartWindow, body.duration),
     schedulesPerUser,
-  };
-};
+  }
+}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Schedule[] | any>
 ) {
-  const { body }: { body: ScheduleReq } = req;
+  const { body }: { body: ScheduleReq } = req
   const userId = req.query.userId
 
   if (req.method === "GET") {
@@ -121,15 +125,15 @@ export default async function handler(
       .firestore()
       .collection("schedules")
       .where("userId", "==", userId || "cheevers@zg.gz")
-      .get();
-    const data: Schedule[] = [];
+      .get()
+    const data: Schedule[] = []
     dataSnapshot.forEach((doc: any) => {
-      data.push(doc.data() as Schedule);
-    });
+      data.push(doc.data() as Schedule)
+    })
 
-    res.status(200).json(data);
+    res.status(200).json(data)
   } else if (req.method === "POST") {
-    const result = await createScheduleIfPossible(userId as string, body);
-    res.status(200).json(result);
+    const result = await createScheduleIfPossible(userId as string, body)
+    res.status(200).json(result)
   }
 }

@@ -1,10 +1,25 @@
-import { SocialCircle } from "pages/api/schedules"
+import { SocialCircle } from "pages/api/schedules/[userId]"
 import { User } from "pages/api/users/[id]"
-import { Telegraf, Markup } from "telegraf"
+import { Telegraf, Markup, session, Context } from "telegraf"
+import { telegrafThrottler } from "telegraf-throttler"
 import { getUsers, upsertUser } from "./storage"
 
+const throttler = telegrafThrottler()
+
+type SessionData = {
+  scheduling: boolean
+}
+
+interface CustomContext extends Context {
+  session?: SessionData
+}
+
 export const createBot = (token: string) => {
-  const bot = new Telegraf(token)
+  const bot = new Telegraf<CustomContext>(token)
+  bot.use(throttler)
+  bot.use(session())
+
+  const handleScheduleTime = (text: string) => {}
 
   bot.start(async (ctx) => {
     ctx.reply(
@@ -12,6 +27,14 @@ export const createBot = (token: string) => {
       Markup.inlineKeyboard([[Markup.button.callback("Join group", "join")]])
     )
   })
+
+  bot.command("schedule", async (ctx) => {
+    ctx.session ??= { scheduling: false }
+    ctx.session.scheduling = !ctx.session.scheduling
+    ctx.reply(`${ctx.session.scheduling}`)
+  })
+
+  bot.on("message", (ctx) => {})
 
   bot.action("join", async (ctx) => {
     if (ctx.from === null || ctx.from === undefined) return
