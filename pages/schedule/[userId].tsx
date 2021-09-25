@@ -15,6 +15,8 @@ const Schedule: NextPage = (props) => {
     fetcher
   )
 
+  if (!data) return null
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Today</h1>
