@@ -1,6 +1,6 @@
 import { upsertUser } from "bot/storage"
 import { CustomContext } from "bot/types"
-import { environment } from "environment"
+import { getEnvironment } from "environment"
 import { SocialCircle } from "pages/api/schedules/[userId]"
 import { User } from "pages/api/users/[id]"
 import { Markup, Telegraf } from "telegraf"
@@ -17,6 +17,8 @@ export const handleStart = (bot: Telegraf<CustomContext>) => {
 
   // Handle "Join group" button press
   bot.action("join", async (ctx) => {
+    const { appPath } = await getEnvironment()
+
     // If pressed not by user
     if (isNullOrUndefined(ctx.from)) return
 
@@ -47,12 +49,7 @@ export const handleStart = (bot: Telegraf<CustomContext>) => {
       ctx.from.id,
       "Here's your personalized dashboard link",
       Markup.inlineKeyboard([
-        [
-          Markup.button.url(
-            "Dashboard",
-            `${environment.appPath}/?userId=${ctx.from.id}`
-          ),
-        ],
+        [Markup.button.url("Dashboard", `${appPath}/?userId=${ctx.from.id}`)],
       ])
     )
   })
