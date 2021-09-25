@@ -5,11 +5,21 @@ import { isNullOrUndefined } from "utils/helpers"
 
 export const handleSchedule = (bot: Telegraf<CustomContext>) => {
   bot.command("schedule", async (ctx) => {
-    const text = ctx.message.text.replace("/schedule ", "")
+    const text = ctx.message.text.replace("/schedule", "").trim()
     const name = text.length !== 0 ? text : "Unnamed event"
-    ctx.session ??= { scheduling: true, scheduleName: name }
+
+    const chatId = ctx.message.chat.id
+    const chat = await bot.telegram.getChat(chatId)
+    const isPrivate = chat.type === "private"
+
+    ctx.session ??= { scheduling: true, scheduleName: name, private: isPrivate }
     ctx.session.scheduleName = name
-    ctx.reply(`How much time do you need for ${name}?`)
+    ctx.session.private = isPrivate
+    ctx.reply(
+      `How much time do you need for ${
+        isPrivate ? "personal " : " "
+      }event: "${name}"?`
+    )
   })
 
   bot.on("text", async (ctx) => {
@@ -25,19 +35,16 @@ export const handleSchedule = (bot: Telegraf<CustomContext>) => {
 
     const chatId = ctx.message.chat.id
     const chat = await bot.telegram.getChat(chatId)
-    if (chat.type === "private") {
-      // TODO:
-      return
-    }
+    const isPrivate = chat.type === "private"
 
     const duration = parseInt(match[0])
 
     const result = await createScheduleIfPossible(ctx.from.id.toString(), {
-      isPersonal: false,
+      isPersonal: isPrivate,
       isGranular: false,
       duration: duration,
       name: scheduleName,
-      socialCircle: chat.title,
+      socialCircle: isPrivate ? null : (chat as any).title,
     })
 
     if (isNullOrUndefined(result.startTime)) {
