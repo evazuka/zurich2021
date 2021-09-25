@@ -1,20 +1,17 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import fb from "../utils/firebase";
+import fb from "../../utils/firebase";
 
-export type Schedule = {
-  userEmail: string;
-  isPersonal: boolean;
-  isGranular: boolean;
-  startTime: string;
-  endTime: string;
+export type User = {
+  mindState: string;
   name: string;
-  socialCircle: string;
+  resilienceRating: number;
+  socialCircles: string[];
 };
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Schedule[]>
+  res: NextApiResponse<User>
 ) {
   const dataSnapshot = await fb()
     .firestore()
