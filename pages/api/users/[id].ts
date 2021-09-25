@@ -7,6 +7,7 @@ export type User = {
   name: string;
   resilienceRating: number;
   socialCircles: string[];
+  id?: string;
 };
 
 export default async function handler(
