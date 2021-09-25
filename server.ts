@@ -14,9 +14,7 @@ const handle = app.getRequestHandler()
 const bot = createBot(botToken)
 const secretPath = `/bot/${bot.secretPathComponent()}`
 
-if (dev) {
-  bot.telegram.setWebhook(`${environment.appPath}${secretPath}`)
-}
+bot.telegram.setWebhook(`${environment.appPath}${secretPath}`)
 
 app.prepare().then(() => {
   const server = express()
