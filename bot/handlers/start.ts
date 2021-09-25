@@ -49,7 +49,7 @@ export const handleStart = (bot: Telegraf<CustomContext>) => {
         [
           Markup.button.url(
             "Dashboard",
-            `${process.env.LT_PATH}/schedule/${ctx.from.id}`
+            `${process.env.LT_PATH}/?userId=${ctx.from.id}`
           ),
         ],
       ])
