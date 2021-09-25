@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import fb from "../../utils/firebase";
+import fb from "../../../utils/firebase";
 
 export type User = {
   mindState: string;
