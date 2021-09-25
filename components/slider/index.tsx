@@ -9,20 +9,38 @@ import classNames from 'classnames'
 const MOODS = [
   {
     illustration: Meditation,
-    title: 'Focused'
+    title: 'Focused',
+    resilienceRating: 3
   },
   {
     illustration: WorkFromAnywhere,
-    title: 'Flexible'
+    title: 'Flexible',
+    resilienceRating: 5
   },
   {
     illustration: HavingFun,
-    title: 'Expressive'
+    title: 'Expressive',
+    resilienceRating: 7
   }
 ]
 
 const Slider = () => {
-  const [active, setActive] = useState<number>(0)
+  const [active, setActive] = useState<number>(1)
+
+  const handleClick = (index: number) => async () => {
+    const userId = new URL(window.location.href).searchParams.get('userId')
+
+    await fetch(`/api/users/${userId}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        mindState: MOODS[index].title,
+        resilienceRating: MOODS[index].resilienceRating
+      })
+    })
+
+    window.location.href = `${window.location.origin}/schedule/${userId}`
+  }
+
 
   const handleSwipedLeft = () => setActive(active => Math.min(MOODS.length - 1, active + 1))
   const handleSwipedRight = () => setActive(active => Math.max(0, active - 1))
@@ -45,6 +63,7 @@ const Slider = () => {
               key={index}
               className={classNames(styles.item, { [styles.itemActive]: isActive })}
               onMouseEnter={handleMouseEnter(index)}
+              onClick={handleClick(index)}
             >
               {isActive && (
                 <div className={classNames(styles.titleWrapper, styles[`titleWrapper${index + 1}`])}>
