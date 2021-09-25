@@ -136,11 +136,14 @@ export default async function handler(
       involvedUser.push(user);
     });
     const [user] = involvedUser;
+    console.log("user", user, userId);
     const personalSchedules = await fb()
       .firestore()
       .collection("schedules")
-      .where("userId", "==", userId || "cheevers@zg.gz")
+      .where("userId", "==", userId)
+      .where("isPersonal", "==", true)
       .get();
+    console.log("user", user);
     const socialCircleSchedules = await fb()
       .firestore()
       .collection("schedules")
