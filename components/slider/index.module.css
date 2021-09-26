@@ -242,10 +242,10 @@
     min-width: 20px;
     flex-shrink: 10;
   }
-
+/*
   .gallery {
     pointer-events: none;
-  }
+  } */
 
   .title {
     font-size: 64px;

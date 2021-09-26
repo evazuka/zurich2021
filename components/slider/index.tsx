@@ -30,15 +30,17 @@ const Slider = () => {
   const handleClick = (index: number) => async () => {
     const userId = new URL(window.location.href).searchParams.get('userId')
 
+    const mindState = MOODS[index].title
+
     await fetch(`/api/users/${userId}`, {
       method: 'POST',
       body: JSON.stringify({
-        mindState: MOODS[index].title,
+        mindState,
         resilienceRating: MOODS[index].resilienceRating
       })
     })
 
-    window.location.href = `${window.location.origin}/schedule/${userId}`
+    window.location.href = `${window.location.origin}/schedule/${userId}?mindState=${mindState}`
   }
 
 

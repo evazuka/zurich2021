@@ -3,12 +3,14 @@
   margin: auto;
 }
 
-.title {}
+.title {
+  padding: 0 .5rem;
+}
 
 .content {
   display: grid;
   row-gap: .5rem;
-  padding: 1rem 0;
+  padding: 1rem .5rem 0 0;
 }
 
 .period {
