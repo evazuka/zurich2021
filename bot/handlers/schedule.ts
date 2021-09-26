@@ -54,14 +54,14 @@ export const handleSchedule = (bot: Telegraf<CustomContext>) => {
     const chat = await bot.telegram.getChat(chatId)
     const isPrivate = chat.type === "private"
 
-    /*const result = await createScheduleIfPossible(ctx.from.id.toString(), {
+    const result = await createScheduleIfPossible(ctx.from.id.toString(), {
       isPersonal: isPrivate,
       isGranular: false,
       duration: durationConverted,
       name: scheduleName,
       socialCircle: isPrivate ? null : (chat as any).title,
     })
-    
+
     if (isNullOrUndefined(result.startTime)) {
       ctx.reply(`Sorry, not time available`)
     } else {
@@ -69,8 +69,8 @@ export const handleSchedule = (bot: Telegraf<CustomContext>) => {
         `Cool, ${scheduleName} booked for ${result.startTime}-${result.endTime}`
       )
     }
-    */
 
+    /* WIP, fix asap
     const result = attemptSchedule()
     ctx.reply(`Sorry, no time available, trying to reschedule 🔄`)
 
@@ -85,6 +85,7 @@ export const handleSchedule = (bot: Telegraf<CustomContext>) => {
         ]),
       }
     )
+    */
   })
 
   bot.action("ok", async (ctx) => {
