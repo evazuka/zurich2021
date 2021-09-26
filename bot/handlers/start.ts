@@ -10,8 +10,18 @@ export const handleStart = (bot: Telegraf<CustomContext>) => {
   // Handle /start command
   bot.start(async (ctx) => {
     ctx.reply(
-      "%onboarding text%",
-      Markup.inlineKeyboard([[Markup.button.callback("Join group", "join")]])
+      `Hello, I am *Phobos*\\.\n
+I can help you to manage time across all of your team members\\.
+Need to plan a meeting? Just ask me to do it by calling\n
+\`/schedule Your meeting name\`\n
+Ready to start? Join this social group by clicking link below:
+    `,
+      {
+        parse_mode: "MarkdownV2",
+        ...Markup.inlineKeyboard([
+          [Markup.button.callback("Join group", "join")],
+        ]),
+      }
     )
   })
 
@@ -47,10 +57,13 @@ export const handleStart = (bot: Telegraf<CustomContext>) => {
     // Send private message
     bot.telegram.sendMessage(
       ctx.from.id,
-      "Here's your personalized dashboard link",
-      Markup.inlineKeyboard([
-        [Markup.button.url("Dashboard", `${appPath}/?userId=${ctx.from.id}`)],
-      ])
+      `Successfully joined *"${chat.title}"* group\\! Here's your personal dashboard link:`,
+      {
+        parse_mode: "MarkdownV2",
+        ...Markup.inlineKeyboard([
+          [Markup.button.url(`Dashboard`, `${appPath}/?userId=${ctx.from.id}`)],
+        ]),
+      }
     )
   })
 }

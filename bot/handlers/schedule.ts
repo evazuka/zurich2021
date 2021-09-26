@@ -1,7 +1,8 @@
 import { CustomContext } from "bot/types"
 import { createScheduleIfPossible } from "pages/api/schedules/[userId]"
-import { Telegraf } from "telegraf"
+import { Markup, Telegraf } from "telegraf"
 import { isNullOrUndefined } from "utils/helpers"
+import { attemptSchedule, reschedule, USER_ID } from "utils/forDima"
 
 const timeMap = {
   hour: 60,
@@ -23,8 +24,9 @@ export const handleSchedule = (bot: Telegraf<CustomContext>) => {
     ctx.session.private = isPrivate
     ctx.reply(
       `How much time do you need for ${
-        isPrivate ? "personal " : " "
-      }event: "${name}"?`
+        isPrivate ? "personal " : ""
+      }event: *"${name}"*?`,
+      { parse_mode: "MarkdownV2" }
     )
   })
 
@@ -52,14 +54,14 @@ export const handleSchedule = (bot: Telegraf<CustomContext>) => {
     const chat = await bot.telegram.getChat(chatId)
     const isPrivate = chat.type === "private"
 
-    const result = await createScheduleIfPossible(ctx.from.id.toString(), {
+    /*const result = await createScheduleIfPossible(ctx.from.id.toString(), {
       isPersonal: isPrivate,
       isGranular: false,
       duration: durationConverted,
       name: scheduleName,
       socialCircle: isPrivate ? null : (chat as any).title,
     })
-
+    
     if (isNullOrUndefined(result.startTime)) {
       ctx.reply(`Sorry, not time available`)
     } else {
@@ -67,5 +69,41 @@ export const handleSchedule = (bot: Telegraf<CustomContext>) => {
         `Cool, ${scheduleName} booked for ${result.startTime}-${result.endTime}`
       )
     }
+    */
+
+    const result = attemptSchedule()
+    ctx.reply(`Sorry, no time available, trying to reschedule 🔄`)
+
+    bot.telegram.sendMessage(
+      result,
+      `Hey, can you please move your *"Laundry"* appointment today from _10:00 \\- 11:00_ to _11:00 \\- 12:00_?`,
+      {
+        parse_mode: "MarkdownV2",
+        ...Markup.inlineKeyboard([
+          [Markup.button.callback("Yes", `ok`)],
+          [Markup.button.callback("No", `ok`)],
+        ]),
+      }
+    )
+  })
+
+  bot.action("ok", async (ctx) => {
+    await reschedule()
+
+    const result = await createScheduleIfPossible(ctx.from!.id.toString(), {
+      isPersonal: false,
+      isGranular: false,
+      duration: 60,
+      name: "Quick chat",
+      socialCircle: "Work",
+    })
+
+    ctx.reply(`Thanks 👌`)
+
+    bot.telegram.sendMessage(
+      "-510425360",
+      `I have successfully managed to schedule "Quick chat" appointment for _10:00 \\- 11:00_ ✅`,
+      { parse_mode: "MarkdownV2" }
+    )
   })
 }
